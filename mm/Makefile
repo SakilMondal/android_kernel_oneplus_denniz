@@ -131,3 +131,4 @@ obj-$(CONFIG_DUMP_TASKS_MEM) += task_mem/
 obj-$(CONFIG_PHYSICAL_ANTI_FRAGMENTATION) += multi_freearea.o
 #endif
 
+CFLAGS_kmemleak.o += -DCONFIG_DEBUG_FS
