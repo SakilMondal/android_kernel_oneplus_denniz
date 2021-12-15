@@ -2211,9 +2211,9 @@ static int aw86907_rtp_update(struct aw86907 *aw86907)
                         (aw86907->ram.base_addr >> 2)) & 0x00FF)));
 
 /*
-*	unsigned int temp
-*	HIGH<byte4 byte3 byte2 byte1>LOW
-*	|_ _ _ _AF-12BIT_ _ _ _AE-12BIT|
+*   unsigned int temp
+*   HIGH<byte4 byte3 byte2 byte1>LOW
+*   |_ _ _ _AF-12BIT_ _ _ _AE-12BIT|
 */
     aw86907_i2c_read(aw86907, AW86907_REG_RTPCFG3, &reg_val);
     temp = ((reg_val & 0x0f) << 24) | ((reg_val & 0xf0) << 4);
@@ -2444,7 +2444,7 @@ static int aw86907_haptic_play_mode(struct aw86907 *aw86907, unsigned char play_
             aw86907_i2c_write_bits(aw86907, AW86907_REG_PLAYCFG1,
                        AW86907_BIT_PLAYCFG1_BST_MODE_MASK,
                        AW86907_BIT_PLAYCFG1_BST_MODE_BOOST);
-			mdelay(2);
+            mdelay(2);
             break;
         case AW86907_HAPTIC_RAM_LOOP_MODE:
             pr_info("%s: enter ram loop mode\n",
@@ -2460,7 +2460,7 @@ static int aw86907_haptic_play_mode(struct aw86907 *aw86907, unsigned char play_
             aw86907_i2c_write_bits(aw86907, AW86907_REG_PLAYCFG1,
                            AW86907_BIT_PLAYCFG1_BST_MODE_MASK,
                            AW86907_BIT_PLAYCFG1_BST_MODE_BOOST);
-		    mdelay(2);
+            mdelay(2);
             break;
         case AW86907_HAPTIC_RTP_MODE:
             pr_info("%s: enter rtp mode\n", __func__);
@@ -2472,7 +2472,7 @@ static int aw86907_haptic_play_mode(struct aw86907 *aw86907, unsigned char play_
             aw86907_i2c_write_bits(aw86907, AW86907_REG_PLAYCFG1,
                            AW86907_BIT_PLAYCFG1_BST_MODE_MASK,
                            AW86907_BIT_PLAYCFG1_BST_MODE_BOOST);
-		    mdelay(2);
+            mdelay(2);
             break;
         case AW86907_HAPTIC_TRIG_MODE:
             pr_info("%s: enter trig mode\n", __func__);
@@ -2480,7 +2480,7 @@ static int aw86907_haptic_play_mode(struct aw86907 *aw86907, unsigned char play_
             aw86907_i2c_write_bits(aw86907, AW86907_REG_PLAYCFG3,
                            AW86907_BIT_PLAYCFG3_PLAY_MODE_MASK,
                            AW86907_BIT_PLAYCFG3_PLAY_MODE_RAM);
-			mdelay(2);
+            mdelay(2);
             break;
         case AW86907_HAPTIC_CONT_MODE:
             pr_info("%s: enter cont mode\n", __func__);
@@ -3232,7 +3232,7 @@ static int aw86907_rtp_osc_calibration(struct aw86907 *aw86907)
     }
     aw86907->rtp_init = 0;
     mutex_lock(&aw86907->rtp_lock);
-    #ifndef OPLUS_FEATURE_CHG_BASIC
+#ifndef OPLUS_FEATURE_CHG_BASIC
     kfree(aw86907_rtp);
     aw86907_rtp = kzalloc(rtp_file->size+sizeof(int), GFP_KERNEL);
     if (!aw86907_rtp) {
@@ -3241,7 +3241,7 @@ static int aw86907_rtp_osc_calibration(struct aw86907 *aw86907)
         pr_err("%s: error allocating memory\n", __func__);
         return -1;
     }
-    #else
+#else
     ret = aw86907_container_init(rtp_file->size+sizeof(int));
     if (ret < 0) {
         release_firmware(rtp_file);
@@ -3249,7 +3249,7 @@ static int aw86907_rtp_osc_calibration(struct aw86907 *aw86907)
         pr_err("%s: error allocating memory\n", __func__);
         return -1;
     }
-    #endif
+#endif
     aw86907_rtp->len = rtp_file->size;
     aw86907->rtp_len = rtp_file->size;
     mutex_unlock(&aw86907->rtp_lock);
@@ -5061,12 +5061,12 @@ static int aw86907_haptic_f0_calibration(struct aw86907 *aw86907)
     f0_cali_step = 100000 * ((int)f0_limit - (int)aw86907->f0_pre) / ((int)f0_limit * 24);
     pr_debug("%s f0_cali_step=%d\n", __func__, f0_cali_step);
 
-    if (f0_cali_step >= 0) {	/*f0_cali_step >= 0 */
+    if (f0_cali_step >= 0) {    /*f0_cali_step >= 0 */
         if (f0_cali_step % 10 >= 5)
             f0_cali_step = 32 + (f0_cali_step / 10 + 1);
         else
             f0_cali_step = 32 + f0_cali_step / 10;
-    } else {	/* f0_cali_step < 0 */
+    } else {    /* f0_cali_step < 0 */
         if (f0_cali_step % 10 <= -5)
             f0_cali_step = 32 + (f0_cali_step / 10 - 1);
         else
@@ -5627,7 +5627,7 @@ static int aw86907_haptic_init(struct aw86907 *aw86907)
     aw86907->ram_vbat_comp = AW86907_HAPTIC_RAM_VBAT_COMP_ENABLE;
 
     mutex_unlock(&aw86907->lock);
-#ifdef AW_F0_COARSE_CALI	/* Only Test for F0 calibration offset */
+#ifdef AW_F0_COARSE_CALI    /* Only Test for F0 calibration offset */
     aw86907_i2c_write_bits(aw86907, AW86907_REG_TRIMCFG3,
                    AW86907_BIT_TRIMCFG3_OSC_TRIM_SRC_MASK,
                    AW86907_BIT_TRIMCFG3_OSC_TRIM_SRC_REG);
@@ -6045,47 +6045,47 @@ static ssize_t aw86907_vmax_show(struct device *dev,
 }
 
 struct aw86907_vmax_map {
-	int level;
-	int vmax;
-	int gain;
+    int level;
+    int vmax;
+    int gain;
 };
 static struct aw86907_vmax_map vmax_map[] = {
-	{800,  0x00, 0x40},
-	{900,  0x00, 0x49},
-	{1000, 0x00, 0x51},
-	{1100, 0x00, 0x5A},
-	{1200, 0x00, 0x62},
-	{1300, 0x00, 0x6B},
-	{1400, 0x00, 0x73},
-	{1500, 0x00, 0x7C},
-	{1600, 0x02, 0x80},
-	{1700, 0x08, 0x80},
-	{1800, 0x0D, 0x80},
-	{1900, 0x12, 0x80},
-	{2000, 0x17, 0x80},
-	{2100, 0x1C, 0x80},
-	{2200, 0x21, 0x80},
-	{2300, 0x26, 0x80},
-	{2400, 0x2B, 0x80},
+    {800,  0x00, 0x40},
+    {900,  0x00, 0x49},
+    {1000, 0x00, 0x51},
+    {1100, 0x00, 0x5A},
+    {1200, 0x00, 0x62},
+    {1300, 0x00, 0x6B},
+    {1400, 0x00, 0x73},
+    {1500, 0x00, 0x7C},
+    {1600, 0x02, 0x80},
+    {1700, 0x08, 0x80},
+    {1800, 0x0D, 0x80},
+    {1900, 0x12, 0x80},
+    {2000, 0x17, 0x80},
+    {2100, 0x1C, 0x80},
+    {2200, 0x21, 0x80},
+    {2300, 0x26, 0x80},
+    {2400, 0x2B, 0x80},
 };
 
 int aw86907_convert_level_to_vmax(struct aw86907 *aw86907, int val)
 {
-	int i;
+    int i;
 
-	for(i = 0; i < ARRAY_SIZE(vmax_map); i++) {
-		if(val == vmax_map[i].level) {
-			aw86907->vmax = vmax_map[i].vmax;
-			aw86907->gain = vmax_map[i].gain;
-			break;
-		}
-	}
-	if(i == ARRAY_SIZE(vmax_map)) {
-		aw86907->vmax = vmax_map[i - 1].vmax;
-		aw86907->gain = vmax_map[i - 1].gain;
-	}
+    for(i = 0; i < ARRAY_SIZE(vmax_map); i++) {
+        if(val == vmax_map[i].level) {
+            aw86907->vmax = vmax_map[i].vmax;
+            aw86907->gain = vmax_map[i].gain;
+            break;
+        }
+    }
+    if(i == ARRAY_SIZE(vmax_map)) {
+        aw86907->vmax = vmax_map[i - 1].vmax;
+        aw86907->gain = vmax_map[i - 1].gain;
+    }
 
-	return i;
+    return i;
 }
 
 static ssize_t aw86907_vmax_store(struct device *dev,
@@ -7110,27 +7110,27 @@ static ssize_t aw86907_f0_data_store(struct device *dev, struct device_attribute
 
 
 static ssize_t aw86907_rtp_going_show(struct device *dev, struct device_attribute *attr,
-		char *buf)
+        char *buf)
 {
 #ifdef TIMED_OUTPUT
-	struct timed_output_dev *to_dev = dev_get_drvdata(dev);
-	struct aw86907 *aw86907 = container_of(to_dev, struct aw86907, to_dev);
+    struct timed_output_dev *to_dev = dev_get_drvdata(dev);
+    struct aw86907 *aw86907 = container_of(to_dev, struct aw86907, to_dev);
 #else
-	struct led_classdev *cdev = dev_get_drvdata(dev);
-	struct aw86907 *aw86907 = container_of(cdev, struct aw86907, cdev);
+    struct led_classdev *cdev = dev_get_drvdata(dev);
+    struct aw86907 *aw86907 = container_of(cdev, struct aw86907, cdev);
 #endif
-	ssize_t len = 0;
-	int val = -1;
+    ssize_t len = 0;
+    int val = -1;
 
-	val = aw86907_haptic_juge_RTP_is_going_on(aw86907);
-	len += snprintf(buf+len, PAGE_SIZE-len, "%d\n", val);
-	return len;
+    val = aw86907_haptic_juge_RTP_is_going_on(aw86907);
+    len += snprintf(buf+len, PAGE_SIZE-len, "%d\n", val);
+    return len;
 }
 
 static ssize_t aw86907_rtp_going_store(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+        struct device_attribute *attr, const char *buf, size_t count)
 {
-	return count;
+    return count;
 }
 
 static ssize_t aw86907_osc_cali_show(struct device *dev, struct device_attribute *attr,

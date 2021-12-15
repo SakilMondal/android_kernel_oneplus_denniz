@@ -49,7 +49,7 @@
 #define AW86907_VBAT_MAX                     5500
 #define OSC_CALI_MAX_LENGTH                  5100000
 
-#define AW86907_MAX_BST_VOL                  0x3f	/* bst_vol-> six bit */
+#define AW86907_MAX_BST_VOL                  0x3f   /* bst_vol-> six bit */
 
 
 /* 0832 */
@@ -620,4 +620,3 @@ enum aw86907_haptic_motor_old_test_mode {
 
 
 #endif
-
