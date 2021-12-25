@@ -1446,11 +1446,11 @@ static int sia81xx_audio_scene_set(
 }
 
 
-void sia81xx_start(){
+void sia81xx_start(void){
         sia81xx_resume(g_sia81xx);
 }
 
-void sia81xx_stop(){
+void sia81xx_stop(void){
         sia81xx_suspend(g_sia81xx);
 }
 static const char *const power_function[] = { "Off", "On" };

@@ -6568,7 +6568,7 @@ void mtk_wait_TE(int te_num) {
 	}
 }
 
-void hbm_notify_fingerprint_if_neccessary() {
+void hbm_notify_fingerprint_if_neccessary(void) {
 	if (te_remain == 0) return;
 
 	te_remain --;
