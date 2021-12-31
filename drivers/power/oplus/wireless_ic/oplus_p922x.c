@@ -2247,14 +2247,14 @@ static int oplus_wpc_chg_parse_chg_dt(struct oplus_p922x_ic *chip)
 	}
 	chg_err("epp_input_step_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.epp_input_step_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_input_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_input_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_input_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_input_ma = 1000;
 	}
 	chg_err("wrap_input_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.wrap_input_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_iout_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_iout_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_iout_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_iout_ma = 1000;
@@ -2289,7 +2289,7 @@ static int oplus_wpc_chg_parse_chg_dt(struct oplus_p922x_ic *chip)
 	}
 	chg_err("temp_cold_fastchg_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.bpp_temp_cold_fastchg_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_temp_little_cold_fastchg_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_little_cold_fastchg_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_temp_little_cold_fastchg_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_temp_little_cold_fastchg_ma = 1200;
@@ -2324,7 +2324,7 @@ static int oplus_wpc_chg_parse_chg_dt(struct oplus_p922x_ic *chip)
 	}
 	chg_err("epp_temp_little_cold_fastchg_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.epp_temp_little_cold_fastchg_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_temp_cool_fastchg_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_cool_fastchg_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_temp_cool_fastchg_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_temp_cool_fastchg_ma = 1200;
@@ -2359,7 +2359,7 @@ static int oplus_wpc_chg_parse_chg_dt(struct oplus_p922x_ic *chip)
 	}
 	chg_err("epp_temp_cool_fastchg_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.epp_temp_cool_fastchg_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_temp_little_cool_fastchg_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_little_cool_fastchg_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_temp_little_cool_fastchg_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_temp_little_cool_fastchg_ma = 1200;
@@ -2387,7 +2387,7 @@ static int oplus_wpc_chg_parse_chg_dt(struct oplus_p922x_ic *chip)
 	}
 	chg_err("epp_temp_little_cool_fastchg_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.epp_temp_little_cool_fastchg_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_temp_normal_fastchg_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_normal_fastchg_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_temp_normal_fastchg_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_temp_normal_fastchg_ma = 1200;
@@ -2415,7 +2415,7 @@ static int oplus_wpc_chg_parse_chg_dt(struct oplus_p922x_ic *chip)
 	}
 	chg_err("epp_temp_normal_fastchg_ma[%d]\n", chip->p922x_chg_status.wpc_chg_param.epp_temp_normal_fastchg_ma);
 
-	rc = of_property_read_u32(node, "qcom,wrap_temp_warm_fastchg_ma",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_warm_fastchg_ma",
 			&chip->p922x_chg_status.wpc_chg_param.wrap_temp_warm_fastchg_ma);
 	if (rc) {
 		chip->p922x_chg_status.wpc_chg_param.wrap_temp_warm_fastchg_ma = 1200;

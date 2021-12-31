@@ -100,7 +100,7 @@ struct wrap_gpio_control {
 	int clock_gpio;
 	int data_gpio;
 	int wrap_mcu_id_gpio;
-	int wrap_asic_id_gpio;
+	int vooc_asic_id_gpio;
 	int data_irq;
 	struct pinctrl *pinctrl;
 
@@ -118,8 +118,8 @@ struct wrap_gpio_control {
 	struct pinctrl_state *gpio_reset_active;
 	struct pinctrl_state *gpio_reset_sleep;
 	struct pinctrl_state *gpio_wrap_mcu_id_default;
-	struct pinctrl_state *gpio_wrap_asic_id_active;
-	struct pinctrl_state *gpio_wrap_asic_id_sleep;
+	struct pinctrl_state *gpio_vooc_asic_id_active;
+	struct pinctrl_state *gpio_vooc_asic_id_sleep;
 };
 
 struct oplus_wrap_chip {

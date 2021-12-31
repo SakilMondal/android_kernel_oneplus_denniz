@@ -1413,7 +1413,7 @@ static int rk826_parse_fw_from_dt(struct oplus_wrap_chip *chip)
 		return -ENOMEM;
 	}
 
-	data = of_get_property(node, "wrap,firmware_data", &len);
+	data = of_get_property(node, "vooc,firmware_data", &len);
 	if (!data) {
 		pr_err("%s: parse wrap fw failed\n", __func__);
 		return -ENOMEM;

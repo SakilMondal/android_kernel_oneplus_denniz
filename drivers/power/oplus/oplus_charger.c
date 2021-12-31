@@ -1711,7 +1711,7 @@ int oplus_chg_parse_swrap_dt(struct oplus_chg_chip *chip)
 	if (rc) {
 		chip->vbatt_num = 1;
 	}
-	rc = of_property_read_u32(node, "qcom,wrap_project", &chip->wrap_project);
+	rc = of_property_read_u32(node, "qcom,vooc_project", &chip->wrap_project);
 	if (rc < 0) {
 		chip->wrap_project = 0;
 	}
@@ -2701,55 +2701,55 @@ int oplus_chg_parse_charger_dt(struct oplus_chg_chip *chip)
 		chip->batt_capacity_mah = 2000;
 	}
 
-	chip->chg_ctrl_by_wrap = of_property_read_bool(node, "qcom,chg_ctrl_by_wrap");
-	chip->chg_ctrl_by_wrap_default = of_property_read_bool(node, "qcom,chg_ctrl_by_wrap");
+	chip->chg_ctrl_by_wrap = of_property_read_bool(node, "qcom,chg_ctrl_by_vooc");
+	chip->chg_ctrl_by_wrap_default = of_property_read_bool(node, "qcom,chg_ctrl_by_vooc");
 
-	rc = of_property_read_u32(node, "qcom,input_current_wrap_ma_normal",
+	rc = of_property_read_u32(node, "qcom,input_current_vooc_ma_normal",
 			&chip->limits.input_current_wrap_ma_normal);
 	if (rc) {
 		chip->limits.input_current_wrap_ma_normal = 3600;
 	}
-	rc = of_property_read_u32(node, "qcom,input_current_wrap_led_ma_high",
+	rc = of_property_read_u32(node, "qcom,input_current_vooc_led_ma_high",
 			&chip->limits.input_current_wrap_led_ma_high);
 	if (rc) {
 		chip->limits.input_current_wrap_led_ma_high = 1800;
 	}
-	rc = of_property_read_u32(node, "qcom,input_current_wrap_led_ma_warm",
+	rc = of_property_read_u32(node, "qcom,input_current_vooc_led_ma_warm",
 			&chip->limits.input_current_wrap_led_ma_warm);
 	if (rc) {
 		chip->limits.input_current_wrap_led_ma_warm = 1800;
 	}
-	rc = of_property_read_u32(node, "qcom,input_current_wrap_led_ma_normal",
+	rc = of_property_read_u32(node, "qcom,input_current_vooc_led_ma_normal",
 			&chip->limits.input_current_wrap_led_ma_normal);
 	if (rc) {
 		chip->limits.input_current_wrap_led_ma_normal = 1800;
 	}
-	rc = of_property_read_u32(node, "qcom,wrap_temp_bat_normal_decidegc",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_bat_normal_decidegc",
 		&chip->limits.wrap_normal_bat_decidegc);
 	if (rc) {
 		chip->limits.wrap_normal_bat_decidegc = 340;
 	}
-	rc = of_property_read_u32(node, "qcom,input_current_wrap_ma_warm",
+	rc = of_property_read_u32(node, "qcom,input_current_vooc_ma_warm",
 			&chip->limits.input_current_wrap_ma_warm);
 	if (rc) {
 		chip->limits.input_current_wrap_ma_warm = 3000;
 	}
-	rc = of_property_read_u32(node, "qcom,wrap_temp_bat_warm_decidegc",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_bat_warm_decidegc",
 			&chip->limits.wrap_warm_bat_decidegc);
 	if (rc) {
 		chip->limits.wrap_warm_bat_decidegc = 380;
 	}
-	rc = of_property_read_u32(node, "qcom,input_current_wrap_ma_high",
+	rc = of_property_read_u32(node, "qcom,input_current_vooc_ma_high",
 			&chip->limits.input_current_wrap_ma_high);
 	if (rc) {
 		chip->limits.input_current_wrap_ma_high = 2600;
 	}
-	rc = of_property_read_u32(node, "qcom,wrap_temp_bat_hot_decidegc",
+	rc = of_property_read_u32(node, "qcom,vooc_temp_bat_hot_decidegc",
 			&chip->limits.wrap_high_bat_decidegc);
 	if (rc) {
 		chip->limits.wrap_high_bat_decidegc = 450;
 	}
-	rc = of_property_read_u32(node, "qcom,charger_current_wrap_ma_normal",
+	rc = of_property_read_u32(node, "qcom,charger_current_vooc_ma_normal",
 			&chip->limits.charger_current_wrap_ma_normal);
 	if (rc) {
 		chip->limits.charger_current_wrap_ma_normal = 1000;
@@ -2908,7 +2908,7 @@ int oplus_chg_parse_charger_dt(struct oplus_chg_chip *chip)
 		chip->usbtemp_batttemp_gap = 18;
 	}
 
-	chip->wrap_show_ui_soc_decimal = of_property_read_bool(node, "qcom,wrap_show_ui_soc_decimal");
+	chip->wrap_show_ui_soc_decimal = of_property_read_bool(node, "qcom,vooc_show_ui_soc_decimal");
 
 	rc = of_property_read_u32(node, "qcom,ui_soc_decimal_speedmin", &chip->ui_soc_decimal_speedmin);
 	if (rc) {

@@ -59,7 +59,7 @@ void init_hw_version(void)
 }
 
 extern	int oplus_wrap_mcu_hwid_check(struct oplus_wrap_chip *chip);
-extern int oplus_wrap_asic_hwid_check(struct oplus_wrap_chip *chip);
+extern int oplus_vooc_asic_hwid_check(struct oplus_wrap_chip *chip);
 
 int get_wrap_mcu_type(struct oplus_wrap_chip *chip)
 {
@@ -69,7 +69,7 @@ int get_wrap_mcu_type(struct oplus_wrap_chip *chip)
 		chg_err("oplus_wrap_chip is not ready, enable stm8s\n");
 		return OPLUS_WRAP_MCU_HWID_STM8S;
 	}
-	mcu_hwid_type = oplus_wrap_asic_hwid_check(chip);
+	mcu_hwid_type = oplus_vooc_asic_hwid_check(chip);
 	if (mcu_hwid_type != OPLUS_WRAP_ASIC_HWID_NON_EXIST) {
 		return mcu_hwid_type;
 	}
@@ -198,7 +198,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 	}
 
 	chip->wrap_current_lvl_cnt = of_property_count_elems_of_size(node,
-				"qcom,wrap_current_lvl", sizeof(*chip->wrap_current_lvl));
+				"qcom,vooc_current_lvl", sizeof(*chip->wrap_current_lvl));
 	if (chip->wrap_current_lvl_cnt > 0) {
 		chg_err("wrap_current_lvl_cnt[%d]\n", chip->wrap_current_lvl_cnt);
 		chip->wrap_current_lvl = devm_kcalloc(chip->dev, chip->wrap_current_lvl_cnt,
@@ -208,7 +208,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			return;
 		}
 		rc = of_property_read_u32_array(node,
-			"qcom,wrap_current_lvl", chip->wrap_current_lvl, chip->wrap_current_lvl_cnt);
+			"qcom,vooc_current_lvl", chip->wrap_current_lvl, chip->wrap_current_lvl_cnt);
 		if (rc) {
 			chg_err("qcom,cp_ffc_current_lvl error\n");
 			return;
@@ -220,23 +220,23 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 	}
 	chip->batt_type_4400mv = of_property_read_bool(node, "qcom,oplus_batt_4400mv");
 	chip->support_wrap_by_normal_charger_path = of_property_read_bool(node,
-		"qcom,support_wrap_by_normal_charger_path");
+		"qcom,support_vooc_by_normal_charger_path");
 
-	rc = of_property_read_u32(node, "qcom,wrap-fw-type", &chip->wrap_fw_type);
+	rc = of_property_read_u32(node, "qcom,vooc-fw-type", &chip->wrap_fw_type);
 	if (rc) {
 		chip->wrap_fw_type = WRAP_FW_TYPE_INVALID;
 	}
 
 	chg_debug("oplus_wrap_fw_type_dt batt_type_4400 is %d,wrap_fw_type = 0x%x\n",
 		chip->batt_type_4400mv, chip->wrap_fw_type);
-	chip->wrap_is_platform_gauge = of_property_read_bool(node, "qcom,wrap_is_platform_gauge");
+	chip->wrap_is_platform_gauge = of_property_read_bool(node, "qcom,vooc_is_platform_gauge");
 	chg_debug("oplus_wrap_fw_type_dt wrap_is_platform_gauge is %d\n", chip->wrap_is_platform_gauge);
 
 	chip->wrap_fw_update_newmethod = of_property_read_bool(node,
-		"qcom,wrap_fw_update_newmethod");
+		"qcom,vooc_fw_update_newmethod");
 	chg_debug(" wrap_fw_upate:%d\n", chip->wrap_fw_update_newmethod);
 
-	rc = of_property_read_u32(node, "qcom,wrap-low-temp",
+	rc = of_property_read_u32(node, "qcom,vooc-low-temp",
 		&chip->wrap_low_temp);
 	if (rc) {
 		chip->wrap_low_temp = 165;
@@ -246,7 +246,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 
 	chip->wrap_batt_over_low_temp = chip->wrap_low_temp - 5;
 
-	rc = of_property_read_u32(node, "qcom,wrap-little-cool-temp",
+	rc = of_property_read_u32(node, "qcom,vooc-little-cool-temp",
 			&chip->wrap_little_cool_temp);
 	if (rc) {
 		chip->wrap_little_cool_temp = 160;
@@ -255,7 +255,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 	}
 	chip->wrap_little_cool_temp_default = chip->wrap_little_cool_temp;
 
-	rc = of_property_read_u32(node, "qcom,wrap-cool-temp",
+	rc = of_property_read_u32(node, "qcom,vooc-cool-temp",
 			&chip->wrap_cool_temp);
 	if (rc) {
 		chip->wrap_cool_temp = 120;
@@ -264,7 +264,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 	}
 	chip->wrap_cool_temp_default = chip->wrap_cool_temp;
 
-	rc = of_property_read_u32(node, "qcom,wrap-little-cold-temp",
+	rc = of_property_read_u32(node, "qcom,vooc-little-cold-temp",
 			&chip->wrap_little_cold_temp);
 	if (rc) {
 		chip->wrap_little_cold_temp = 50;
@@ -274,7 +274,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 	chip->wrap_little_cold_temp_default = chip->wrap_little_cold_temp;
 
 	
-	rc = of_property_read_u32(node, "qcom,wrap-normal-low-temp",
+	rc = of_property_read_u32(node, "qcom,vooc-normal-low-temp",
 			&chip->wrap_normal_low_temp);
 	if (rc) {
 		chip->wrap_normal_low_temp = 250;
@@ -284,77 +284,77 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 	chip->wrap_normal_low_temp_default = chip->wrap_normal_low_temp;
 	
 
-	rc = of_property_read_u32(node, "qcom,wrap-high-temp", &chip->wrap_high_temp);
+	rc = of_property_read_u32(node, "qcom,vooc-high-temp", &chip->wrap_high_temp);
 	if (rc) {
 		chip->wrap_high_temp = 430;
 	} else {
 		chg_debug("qcom,wrap-high-temp is %d\n", chip->wrap_high_temp);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap-low-soc", &chip->wrap_low_soc);
+	rc = of_property_read_u32(node, "qcom,vooc-low-soc", &chip->wrap_low_soc);
 	if (rc) {
 		chip->wrap_low_soc = 1;
 	} else {
 		chg_debug("qcom,wrap-low-soc is %d\n", chip->wrap_low_soc);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap-high-soc", &chip->wrap_high_soc);
+	rc = of_property_read_u32(node, "qcom,vooc-high-soc", &chip->wrap_high_soc);
 	if (rc) {
 		chip->wrap_high_soc = 85;
 	} else {
 		chg_debug("qcom,wrap-high-soc is %d\n", chip->wrap_high_soc);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_cool_bat_volt", &chip->wrap_cool_bat_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_cool_bat_volt", &chip->wrap_cool_bat_volt);
 	if (rc) {
 		chip->wrap_cool_bat_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_cool_bat_volt is %d\n", chip->wrap_cool_bat_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_little_cool_bat_volt", &chip->wrap_little_cool_bat_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_little_cool_bat_volt", &chip->wrap_little_cool_bat_volt);
 	if (rc) {
 		chip->wrap_little_cool_bat_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_little_cool_bat_volt is %d\n", chip->wrap_little_cool_bat_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_normal_bat_volt", &chip->wrap_normal_bat_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_normal_bat_volt", &chip->wrap_normal_bat_volt);
 	if (rc) {
 		chip->wrap_normal_bat_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_normal_bat_volt is %d\n", chip->wrap_normal_bat_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_warm_bat_volt", &chip->wrap_warm_bat_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_warm_bat_volt", &chip->wrap_warm_bat_volt);
 	if (rc) {
 		chip->wrap_warm_bat_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_warm_bat_volt is %d\n", chip->wrap_warm_bat_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_cool_bat_suspend_volt", &chip->wrap_cool_bat_suspend_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_cool_bat_suspend_volt", &chip->wrap_cool_bat_suspend_volt);
 	if (rc) {
 		chip->wrap_cool_bat_suspend_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_cool_bat_suspend_volt is %d\n", chip->wrap_cool_bat_suspend_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_little_cool_bat_suspend_volt", &chip->wrap_little_cool_bat_suspend_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_little_cool_bat_suspend_volt", &chip->wrap_little_cool_bat_suspend_volt);
 	if (rc) {
 		chip->wrap_little_cool_bat_suspend_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_little_cool_bat_suspend_volt is %d\n", chip->wrap_little_cool_bat_suspend_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_normal_bat_suspend_volt", &chip->wrap_normal_bat_suspend_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_normal_bat_suspend_volt", &chip->wrap_normal_bat_suspend_volt);
 	if (rc) {
 		chip->wrap_normal_bat_suspend_volt = -1000;
 	} else {
 		chg_debug("qcom,wrap_normal_bat_suspend_volt is %d\n", chip->wrap_normal_bat_suspend_volt);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_warm_bat_suspend_volt", &chip->wrap_warm_bat_suspend_volt);
+	rc = of_property_read_u32(node, "qcom,vooc_warm_bat_suspend_volt", &chip->wrap_warm_bat_suspend_volt);
 	if (rc) {
 		chip->wrap_warm_bat_suspend_volt = -1000;
 	} else {
@@ -363,11 +363,11 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 
 
 	chip->wrap_multistep_adjust_current_support = of_property_read_bool(node,
-		"qcom,wrap_multistep_adjust_current_support");
+		"qcom,vooc_multistep_adjust_current_support");
 	chg_debug("qcom,wrap_multistep_adjust_current_supportis %d\n",
 		chip->wrap_multistep_adjust_current_support);
 
-	rc = of_property_read_u32(node, "qcom,wrap_reply_mcu_bits",
+	rc = of_property_read_u32(node, "qcom,vooc_reply_mcu_bits",
 		&chip->wrap_reply_mcu_bits);
 	if (rc) {
 		chip->wrap_reply_mcu_bits = 4;
@@ -376,7 +376,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_reply_mcu_bits);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_multistep_initial_batt_temp",
+	rc = of_property_read_u32(node, "qcom,vooc_multistep_initial_batt_temp",
 		&chip->wrap_multistep_initial_batt_temp);
 	if (rc) {
 		chip->wrap_multistep_initial_batt_temp = 305;
@@ -385,7 +385,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_multistep_initial_batt_temp);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy_normal_current",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy_normal_current",
 		&chip->wrap_strategy_normal_current);
 	if (rc) {
 		chip->wrap_strategy_normal_current = 0x03;
@@ -394,7 +394,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy_normal_current);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_batt_low_temp1",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_batt_low_temp1",
 		&chip->wrap_strategy1_batt_low_temp1);
 	if (rc) {
 		chip->wrap_strategy1_batt_low_temp1  = chip->wrap_multistep_initial_batt_temp;
@@ -403,7 +403,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_batt_low_temp1);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_batt_low_temp2",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_batt_low_temp2",
 		&chip->wrap_strategy1_batt_low_temp2);
 	if (rc) {
 		chip->wrap_strategy1_batt_low_temp2 = chip->wrap_multistep_initial_batt_temp;
@@ -412,7 +412,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_batt_low_temp2);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_batt_low_temp0",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_batt_low_temp0",
 		&chip->wrap_strategy1_batt_low_temp0);
 	if (rc) {
 		chip->wrap_strategy1_batt_low_temp0 = chip->wrap_multistep_initial_batt_temp;
@@ -421,7 +421,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_batt_low_temp0);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_batt_high_temp0",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_batt_high_temp0",
 		&chip->wrap_strategy1_batt_high_temp0);
 	if (rc) {
 		chip->wrap_strategy1_batt_high_temp0 = chip->wrap_multistep_initial_batt_temp;
@@ -430,7 +430,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_batt_high_temp0);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_batt_high_temp1",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_batt_high_temp1",
 		&chip->wrap_strategy1_batt_high_temp1);
 	if (rc) {
 		chip->wrap_strategy1_batt_high_temp1 = chip->wrap_multistep_initial_batt_temp;
@@ -439,7 +439,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_batt_high_temp1);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_batt_high_temp2",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_batt_high_temp2",
 		&chip->wrap_strategy1_batt_high_temp2);
 	if (rc) {
 		chip->wrap_strategy1_batt_high_temp2 = chip->wrap_multistep_initial_batt_temp;
@@ -448,7 +448,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_batt_high_temp2);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_high_current0",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_high_current0",
 		&chip->wrap_strategy1_high_current0);
 	if (rc) {
 		chip->wrap_strategy1_high_current0  = chip->wrap_strategy_normal_current;
@@ -457,7 +457,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_high_current0);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_high_current1",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_high_current1",
 		&chip->wrap_strategy1_high_current1);
 	if (rc) {
 		chip->wrap_strategy1_high_current1  = chip->wrap_strategy_normal_current;
@@ -466,7 +466,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_high_current1);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_high_current2",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_high_current2",
 		&chip->wrap_strategy1_high_current2);
 	if (rc) {
 		chip->wrap_strategy1_high_current2  = chip->wrap_strategy_normal_current;
@@ -475,7 +475,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_high_current2);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_low_current2",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_low_current2",
 		&chip->wrap_strategy1_low_current2);
 	if (rc) {
 		chip->wrap_strategy1_low_current2  = chip->wrap_strategy_normal_current;
@@ -484,7 +484,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_low_current2);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_low_current1",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_low_current1",
 		&chip->wrap_strategy1_low_current1);
 	if (rc) {
 		chip->wrap_strategy1_low_current1  = chip->wrap_strategy_normal_current;
@@ -493,7 +493,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_low_current1);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy1_low_current0",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy1_low_current0",
 		&chip->wrap_strategy1_low_current0);
 	if (rc) {
 		chip->wrap_strategy1_low_current0  = chip->wrap_strategy_normal_current;
@@ -502,7 +502,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy1_low_current0);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_batt_up_temp1",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_batt_up_temp1",
 		&chip->wrap_strategy2_batt_up_temp1);
 	if (rc) {
 		chip->wrap_strategy2_batt_up_temp1  = chip->wrap_multistep_initial_batt_temp;
@@ -511,7 +511,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_batt_up_temp1);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_batt_up_down_temp2",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_batt_up_down_temp2",
 		&chip->wrap_strategy2_batt_up_down_temp2);
 	if (rc) {
 		chip->wrap_strategy2_batt_up_down_temp2  = chip->wrap_multistep_initial_batt_temp;
@@ -520,7 +520,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_batt_up_down_temp2);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_batt_up_temp3",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_batt_up_temp3",
 		&chip->wrap_strategy2_batt_up_temp3);
 	if (rc) {
 		chip->wrap_strategy2_batt_up_temp3  = chip->wrap_multistep_initial_batt_temp;
@@ -529,7 +529,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_batt_up_temp3);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_batt_up_down_temp4",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_batt_up_down_temp4",
 		&chip->wrap_strategy2_batt_up_down_temp4);
 	if (rc) {
 		chip->wrap_strategy2_batt_up_down_temp4  = chip->wrap_multistep_initial_batt_temp;
@@ -538,7 +538,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_batt_up_down_temp4);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_batt_up_temp5",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_batt_up_temp5",
 		&chip->wrap_strategy2_batt_up_temp5);
 	if (rc) {
 		chip->wrap_strategy2_batt_up_temp5  = chip->wrap_multistep_initial_batt_temp;
@@ -547,7 +547,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_batt_up_temp5);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_batt_up_temp6",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_batt_up_temp6",
 		&chip->wrap_strategy2_batt_up_temp6);
 	if (rc) {
 		chip->wrap_strategy2_batt_up_temp6  = chip->wrap_multistep_initial_batt_temp;
@@ -556,7 +556,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_batt_up_temp6);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_high0_current",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_high0_current",
 		&chip->wrap_strategy2_high0_current);
 	if (rc) {
 		chip->wrap_strategy2_high0_current	= chip->wrap_strategy_normal_current;
@@ -565,7 +565,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_high0_current);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_high1_current",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_high1_current",
 		&chip->wrap_strategy2_high1_current);
 	if (rc) {
 		chip->wrap_strategy2_high1_current	= chip->wrap_strategy_normal_current;
@@ -574,7 +574,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_high1_current);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_high2_current",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_high2_current",
 		&chip->wrap_strategy2_high2_current);
 	if (rc) {
 		chip->wrap_strategy2_high2_current	= chip->wrap_strategy_normal_current;
@@ -583,7 +583,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_high2_current);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_strategy2_high3_current",
+	rc = of_property_read_u32(node, "qcom,vooc_strategy2_high3_current",
 		&chip->wrap_strategy2_high3_current);
 	if (rc) {
 		chip->wrap_strategy2_high3_current	= chip->wrap_strategy_normal_current;
@@ -592,7 +592,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_strategy2_high3_current);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_batt_over_high_temp",
+	rc = of_property_read_u32(node, "qcom,vooc_batt_over_high_temp",
 		&chip->wrap_batt_over_high_temp);
 	if (rc) {
 		chip->wrap_batt_over_high_temp = -EINVAL;
@@ -601,7 +601,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 			chip->wrap_batt_over_high_temp);
 	}
 
-	rc = of_property_read_u32(node, "qcom,wrap_over_high_or_low_current",
+	rc = of_property_read_u32(node, "qcom,vooc_over_high_or_low_current",
 		&chip->wrap_over_high_or_low_current);
 	if (rc) {
 		chip->wrap_over_high_or_low_current = -EINVAL;
@@ -641,7 +641,7 @@ void oplus_wrap_fw_type_dt(struct oplus_wrap_chip *chip)
 extern int main_hwid5_val;
 #endif
 
-int oplus_wrap_asic_hwid_check(struct oplus_wrap_chip *chip)
+int oplus_vooc_asic_hwid_check(struct oplus_wrap_chip *chip)
 {
 	int rc;
 	static int asic_hwid_type = OPLUS_WRAP_MCU_HWID_UNKNOW;
@@ -660,24 +660,24 @@ int oplus_wrap_asic_hwid_check(struct oplus_wrap_chip *chip)
 
 	node = chip->dev->of_node;
 	/* Parsing gpio swutch1*/
-	chip->wrap_gpio.wrap_asic_id_gpio = of_get_named_gpio(node,
-		"qcom,wrap_asic_id-gpio", 0);
-	if (chip->wrap_gpio.wrap_asic_id_gpio < 0) {
-		chg_err("chip->wrap_gpio.wrap_asic_id_gpio not specified\n");
-		asic_hwid_type = OPLUS_WRAP_ASIC_HWID_NON_EXIST;
-		return OPLUS_WRAP_ASIC_HWID_NON_EXIST;
+	chip->wrap_gpio.vooc_asic_id_gpio = of_get_named_gpio(node,
+		"qcom,vooc_asic_id-gpio", 0);
+	if (chip->wrap_gpio.vooc_asic_id_gpio < 0) {
+		chg_err("chip->wrap_gpio.vooc_asic_id_gpio not specified\n");
+                asic_hwid_type = OPLUS_WRAP_ASIC_HWID_NON_EXIST;
+                return OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 	} else {
-		if (gpio_is_valid(chip->wrap_gpio.wrap_asic_id_gpio)) {
-			rc = gpio_request(chip->wrap_gpio.wrap_asic_id_gpio, "wrap-asic-id-gpio");
+		if (gpio_is_valid(chip->wrap_gpio.vooc_asic_id_gpio)) {
+			rc = gpio_request(chip->wrap_gpio.vooc_asic_id_gpio, "wrap-asic-id-gpio");
 			if (rc) {
 				chg_err("unable to request gpio [%d]\n",
-					chip->wrap_gpio.wrap_asic_id_gpio);
+					chip->wrap_gpio.vooc_asic_id_gpio);
 				asic_hwid_type = OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 				return OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 			}
 		}
-		chg_err("chip->wrap_gpio.wrap_asic_id_gpio =%d\n",
-			chip->wrap_gpio.wrap_asic_id_gpio);
+		chg_err("chip->wrap_gpio.vooc_asic_id_gpio =%d\n",
+			chip->wrap_gpio.vooc_asic_id_gpio);
 	}
 
 	chip->wrap_gpio.pinctrl = devm_pinctrl_get(chip->dev);
@@ -687,39 +687,39 @@ int oplus_wrap_asic_hwid_check(struct oplus_wrap_chip *chip)
 		return OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 	}
 
-	chip->wrap_gpio.gpio_wrap_asic_id_sleep =
-		pinctrl_lookup_state(chip->wrap_gpio.pinctrl, "wrap_asic_id_sleep");
-	if (IS_ERR_OR_NULL(chip->wrap_gpio.gpio_wrap_asic_id_sleep)) {
-		chg_err(": %d Failed to get the gpio_wrap_asic_id_sleep\
+	chip->wrap_gpio.gpio_vooc_asic_id_sleep =
+		pinctrl_lookup_state(chip->wrap_gpio.pinctrl, "vooc_asic_id_sleep");
+	if (IS_ERR_OR_NULL(chip->wrap_gpio.gpio_vooc_asic_id_sleep)) {
+		chg_err(": %d Failed to get the gpio_vooc_asic_id_sleep\
 			pinctrl handle\n", __LINE__);
 		asic_hwid_type = OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 		return OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 	}
 
-	chip->wrap_gpio.gpio_wrap_asic_id_active =
-		pinctrl_lookup_state(chip->wrap_gpio.pinctrl, "wrap_asic_id_active");
-	if (IS_ERR_OR_NULL(chip->wrap_gpio.gpio_wrap_asic_id_active)) {
-		chg_err(": %d Failed to get the gpio_wrap_asic_id_active\
+	chip->wrap_gpio.gpio_vooc_asic_id_active =
+		pinctrl_lookup_state(chip->wrap_gpio.pinctrl, "vooc_asic_id_active");
+	if (IS_ERR_OR_NULL(chip->wrap_gpio.gpio_vooc_asic_id_active)) {
+		chg_err(": %d Failed to get the gpio_vooc_asic_id_active\
 			pinctrl handle\n", __LINE__);
 		asic_hwid_type = OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 		return OPLUS_WRAP_ASIC_HWID_NON_EXIST;
 	}
 
 	pinctrl_select_state(chip->wrap_gpio.pinctrl,
-		chip->wrap_gpio.gpio_wrap_asic_id_sleep);
+		chip->wrap_gpio.gpio_vooc_asic_id_sleep);
 
 	usleep_range(10000, 10000);
-	if(gpio_get_value(chip->wrap_gpio.wrap_asic_id_gpio) == 1) {
+	if(gpio_get_value(chip->wrap_gpio.vooc_asic_id_gpio) == 1) {
 		chg_debug("it is  rk826\n");
 		asic_hwid_type = OPLUS_WRAP_ASIC_HWID_RK826;
 		return OPLUS_WRAP_ASIC_HWID_RK826;
 	}
 
 	pinctrl_select_state(chip->wrap_gpio.pinctrl,
-		chip->wrap_gpio.gpio_wrap_asic_id_active);
+		chip->wrap_gpio.gpio_vooc_asic_id_active);
 
 	usleep_range(10000, 10000);
-	if(gpio_get_value(chip->wrap_gpio.wrap_asic_id_gpio) == 1) {
+	if(gpio_get_value(chip->wrap_gpio.vooc_asic_id_gpio) == 1) {
 		chg_debug("it is  rt5125\n");
 		asic_hwid_type = OPLUS_WRAP_ASIC_HWID_RT5125;
 		return OPLUS_WRAP_ASIC_HWID_RT5125;
@@ -755,7 +755,7 @@ int oplus_wrap_mcu_hwid_check(struct oplus_wrap_chip *chip)
 	node = chip->dev->of_node;
 	/* Parsing gpio swutch1*/
 	chip->wrap_gpio.wrap_mcu_id_gpio = of_get_named_gpio(node,
-		"qcom,wrap_mcu_id-gpio", 0);
+		"qcom,vooc_mcu_id-gpio", 0);
 	if (chip->wrap_gpio.wrap_mcu_id_gpio < 0) {
 		chg_err("chip->wrap_gpio.wrap_mcu_id_gpio not specified, enable stm8s\n");
 		mcu_hwid_type = OPLUS_WRAP_MCU_HWID_STM8S;
@@ -1513,8 +1513,8 @@ void oplus_wrap_data_irq_init(struct oplus_wrap_chip *chip)
 	struct device_node *node_new = NULL;
 	u32 intr[2] = {0, 0};
 
-	node = of_find_compatible_node(NULL, NULL, "mediatek, WRAP_AP_DATA-eint");
-	node_new = of_find_compatible_node(NULL, NULL, "mediatek, WRAP_EINT_NEW_FUNCTION");
+	node = of_find_compatible_node(NULL, NULL, "mediatek, VOOC_AP_DATA-eint");
+	node_new = of_find_compatible_node(NULL, NULL, "mediatek, VOOC_EINT_NEW_FUNCTION");
 	if (node) {
 		if (node_new) {
 			chip->wrap_gpio.data_irq = gpio_to_irq(chip->wrap_gpio.data_gpio);
@@ -1539,11 +1539,11 @@ void oplus_wrap_eint_register(struct oplus_wrap_chip *chip)
 	static int register_status = 0;
 	int ret = 0;
 	struct device_node *node = NULL;
-	node = of_find_compatible_node(NULL, NULL, "mediatek, WRAP_EINT_NEW_FUNCTION");
+	node = of_find_compatible_node(NULL, NULL, "mediatek, VOOC_EINT_NEW_FUNCTION");
 	if (node) {
 		opchg_set_data_active(chip);
 		ret = request_irq(chip->wrap_gpio.data_irq, (irq_handler_t)irq_rx_handler,
-				IRQF_TRIGGER_RISING, "WRAP_AP_DATA-eint", chip);
+				IRQF_TRIGGER_RISING, "VOOC_AP_DATA-eint", chip);
 		if (ret < 0) {
 			chg_err("ret = %d, oplus_wrap_eint_register failed to request_irq \n", ret);
 		}
@@ -1551,7 +1551,7 @@ void oplus_wrap_eint_register(struct oplus_wrap_chip *chip)
 		if (!register_status) {
 			opchg_set_data_active(chip);
 			ret = request_irq(chip->wrap_gpio.data_irq, (irq_handler_t)irq_rx_handler,
-					IRQF_TRIGGER_RISING, "WRAP_AP_DATA-eint",  NULL);
+					IRQF_TRIGGER_RISING, "VOOC_AP_DATA-eint",  NULL);
 			if (ret) {
 				chg_err("ret = %d, oplus_wrap_eint_register failed to request_irq \n", ret);
 			}
@@ -1575,7 +1575,7 @@ void oplus_wrap_eint_unregister(struct oplus_wrap_chip *chip)
 {
 #ifdef CONFIG_OPLUS_CHARGER_MTK
 	struct device_node *node = NULL;
-	node = of_find_compatible_node(NULL, NULL, "mediatek, WRAP_EINT_NEW_FUNCTION");
+	node = of_find_compatible_node(NULL, NULL, "mediatek, VOOC_EINT_NEW_FUNCTION");
 	chg_debug("disable_irq_mtk!\r\n");
 	if (node) {
 		free_irq(chip->wrap_gpio.data_irq, chip);

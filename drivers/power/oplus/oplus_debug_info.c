@@ -81,7 +81,7 @@ struct input_current_setting {
 };
 
 #define OPLUS_CHG_WRAP_INPUT_CURRENT_MAX_CNT 10
-struct wrap_charge_strategy {
+struct vooc_charge_strategy {
 	struct capacity_range capacity_range;
 	struct temp_range temp_range;
 	struct input_current_setting input_current[OPLUS_CHG_WRAP_INPUT_CURRENT_MAX_CNT];
@@ -233,7 +233,7 @@ struct oplus_chg_debug_info {
 	int chg_current_by_cooldown;
 	int fastchg_input_current;
 
-	struct wrap_charge_strategy *wrap_charge_strategy;
+	struct vooc_charge_strategy *vooc_charge_strategy;
 	int wrap_charge_input_current_index;
 	int wrap_charge_cur_state_chg_time;
 
@@ -255,7 +255,7 @@ struct oplus_chg_debug_info {
 	int wrap_mcu_error;
 };
 
-struct wrap_charge_strategy *g_wrap_charge_strategy_p[OPLUS_FASTCHG_OUTPUT_POWER_MAX] = {
+struct vooc_charge_strategy *g_vooc_charge_strategy_p[OPLUS_FASTCHG_OUTPUT_POWER_MAX] = {
 	NULL,
 	NULL,
 	NULL,
@@ -883,9 +883,9 @@ static int oplus_chg_get_wrap_input_power(struct oplus_chg_chip *chip)
 	if (wrap_chip->wrap_chg_current_now > 0)
 		cur = cur < wrap_chip->wrap_chg_current_now ? cur : wrap_chip->wrap_chg_current_now;
 
-	if (oplus_chg_debug_info.wrap_charge_strategy) {
+	if (oplus_chg_debug_info.vooc_charge_strategy) {
 		chg_err("wrap strategy input_current_index: %d\n", oplus_chg_debug_info.wrap_charge_input_current_index);
-		mcu_chg_current = oplus_chg_debug_info.wrap_charge_strategy->input_current[oplus_chg_debug_info.wrap_charge_input_current_index].cur;
+		mcu_chg_current = oplus_chg_debug_info.vooc_charge_strategy->input_current[oplus_chg_debug_info.wrap_charge_input_current_index].cur;
 		cur = cur < mcu_chg_current ? cur : mcu_chg_current;
 	}
 
@@ -1002,23 +1002,23 @@ static int oplus_chg_set_chg_flag(int index)
 	return rc;
 }
 
-static int oplus_chg_wrap_charge_strategy_init(struct oplus_chg_chip *chip)
+static int oplus_chg_vooc_charge_strategy_init(struct oplus_chg_chip *chip)
 {
 	int i;
 	int index;
 	int output_power_type = -1;
 	int start_soc, start_temp;
-	struct wrap_charge_strategy *wrap_charge_strategy_p;
+	struct vooc_charge_strategy *vooc_charge_strategy_p;
 
-	if (oplus_chg_debug_info.wrap_charge_strategy != NULL)
+	if (oplus_chg_debug_info.vooc_charge_strategy != NULL)
 	{
 		for(i = oplus_chg_debug_info.wrap_charge_input_current_index; i < OPLUS_CHG_WRAP_INPUT_CURRENT_MAX_CNT; i++) {
-			if (chip->batt_volt <= oplus_chg_debug_info.wrap_charge_strategy->input_current[i].vol) {
+			if (chip->batt_volt <= oplus_chg_debug_info.vooc_charge_strategy->input_current[i].vol) {
 				if (i == oplus_chg_debug_info.wrap_charge_input_current_index)
 					oplus_chg_debug_info.wrap_charge_cur_state_chg_time +=5;
 
-				if (oplus_chg_debug_info.wrap_charge_strategy->input_current[i].time > 0) {
-					if (oplus_chg_debug_info.wrap_charge_cur_state_chg_time >= oplus_chg_debug_info.wrap_charge_strategy->input_current[i].time) {
+				if (oplus_chg_debug_info.vooc_charge_strategy->input_current[i].time > 0) {
+					if (oplus_chg_debug_info.wrap_charge_cur_state_chg_time >= oplus_chg_debug_info.vooc_charge_strategy->input_current[i].time) {
 						if (i < (OPLUS_CHG_WRAP_INPUT_CURRENT_MAX_CNT - 1)) {
 							i++;
 						}
@@ -1048,30 +1048,30 @@ static int oplus_chg_wrap_charge_strategy_init(struct oplus_chg_chip *chip)
 		start_soc = chip->soc;
 		start_temp = chip->temperature;
 
-		wrap_charge_strategy_p = g_wrap_charge_strategy_p[output_power_type];
+		vooc_charge_strategy_p = g_vooc_charge_strategy_p[output_power_type];
 
-		if (wrap_charge_strategy_p) {
-			for(i = 0; wrap_charge_strategy_p[i].capacity_range.low != -1; i++) {
-				if ((wrap_charge_strategy_p[i].capacity_range.low < start_soc)
-						&& (wrap_charge_strategy_p[i].capacity_range.high >= start_soc)
-						&& (wrap_charge_strategy_p[i].temp_range.low < start_temp)
-						&& (wrap_charge_strategy_p[i].temp_range.high >= start_temp)) {
-					oplus_chg_debug_info.wrap_charge_strategy = &wrap_charge_strategy_p[i];
+		if (vooc_charge_strategy_p) {
+			for(i = 0; vooc_charge_strategy_p[i].capacity_range.low != -1; i++) {
+				if ((vooc_charge_strategy_p[i].capacity_range.low < start_soc)
+						&& (vooc_charge_strategy_p[i].capacity_range.high >= start_soc)
+						&& (vooc_charge_strategy_p[i].temp_range.low < start_temp)
+						&& (vooc_charge_strategy_p[i].temp_range.high >= start_temp)) {
+					oplus_chg_debug_info.vooc_charge_strategy = &vooc_charge_strategy_p[i];
 					chg_err("output_power_type: %d, capacity_range [%d, %d], temp_range [%d, %d]\n",
 							output_power_type,
-							wrap_charge_strategy_p[i].capacity_range.low,
-							wrap_charge_strategy_p[i].capacity_range.high,
-							wrap_charge_strategy_p[i].temp_range.low,
-							wrap_charge_strategy_p[i].temp_range.high);
+							vooc_charge_strategy_p[i].capacity_range.low,
+							vooc_charge_strategy_p[i].capacity_range.high,
+							vooc_charge_strategy_p[i].temp_range.low,
+							vooc_charge_strategy_p[i].temp_range.high);
 					break;
 				}
 			}
 		}
 	}
 
-	if (oplus_chg_debug_info.wrap_charge_strategy) {
+	if (oplus_chg_debug_info.vooc_charge_strategy) {
 		for(i = oplus_chg_debug_info.wrap_charge_input_current_index; i < OPLUS_CHG_WRAP_INPUT_CURRENT_MAX_CNT; i++) {
-			if (chip->batt_volt <= oplus_chg_debug_info.wrap_charge_strategy->input_current[i].vol) {
+			if (chip->batt_volt <= oplus_chg_debug_info.vooc_charge_strategy->input_current[i].vol) {
 				oplus_chg_debug_info.wrap_charge_input_current_index = i;
 				oplus_chg_debug_info.wrap_charge_cur_state_chg_time = 5;
 				break;
@@ -1083,10 +1083,10 @@ static int oplus_chg_wrap_charge_strategy_init(struct oplus_chg_chip *chip)
 }
 
 #if 0
-static int oplus_chg_wrap_charge_strategy_post(struct oplus_chg_chip *chip)
+static int oplus_chg_vooc_charge_strategy_post(struct oplus_chg_chip *chip)
 {
 
-	if (oplus_chg_debug_info.wrap_charge_strategy != NULL)
+	if (oplus_chg_debug_info.vooc_charge_strategy != NULL)
 		return 0;
 
 	if (oplus_chg_chg_is_normal_path(chip))
@@ -1098,7 +1098,7 @@ static int oplus_chg_wrap_charge_strategy_post(struct oplus_chg_chip *chip)
 	}
 	else
 	{
-		oplus_chg_debug_info.wrap_charge_strategy = NULL;
+		oplus_chg_debug_info.vooc_charge_strategy = NULL;
 		oplus_chg_debug_info.wrap_charge_input_current_index = 0;
 		oplus_chg_debug_info.wrap_charge_cur_state_chg_time = 0;
 	}
@@ -1596,7 +1596,7 @@ static int oplus_chg_chg_slow_check(struct oplus_chg_chip *chip)
 	}
 	oplus_chg_debug_info.pre_led_state = chip->led_on;
 
-	oplus_chg_wrap_charge_strategy_init(chip);
+	oplus_chg_vooc_charge_strategy_init(chip);
 
 	if (chip->wrap_project && (oplus_wrap_get_fastchg_started() == true)) {
 		oplus_chg_set_chg_flag(OPLUS_NOTIFY_FAST_CHARGER_TIME);
@@ -2054,11 +2054,11 @@ static int oplus_chg_debug_info_parse_dt(void)
 	int size;
 	u32 val[2];
 	char *wrap_adpater_name[] = {
-		"wrap_charge_strategy_20w",
-		"wrap_charge_strategy_30w",
-		"wrap_charge_strategy_33w",
-		"wrap_charge_strategy_50w",
-		"wrap_charge_strategy_65w"
+		"vooc_charge_strategy_20w",
+		"vooc_charge_strategy_30w",
+		"vooc_charge_strategy_33w",
+		"vooc_charge_strategy_50w",
+		"vooc_charge_strategy_65w"
 	};
 
 	oplus_wrap_get_wrap_chip_handle(&wrap_chip);
@@ -2069,12 +2069,12 @@ static int oplus_chg_debug_info_parse_dt(void)
 	if (!wrap_node)
 		return 0;
 
-	ret = of_property_read_u32(wrap_node, "qcom,wrap-max-input-volt-support", &oplus_chg_debug_info.wrap_max_input_volt);
+	ret = of_property_read_u32(wrap_node, "qcom,vooc-max-input-volt-support", &oplus_chg_debug_info.wrap_max_input_volt);
 	if (ret) {
 		oplus_chg_debug_info.wrap_max_input_volt = 5000;
 	}
 
-	ret = of_property_read_u32(wrap_node, "qcom,wrap-max-input-current-support", &oplus_chg_debug_info.wrap_max_input_current);
+	ret = of_property_read_u32(wrap_node, "qcom,vooc-max-input-current-support", &oplus_chg_debug_info.wrap_max_input_current);
 	if (ret) {
 		oplus_chg_debug_info.wrap_max_input_current = 4000;
 	}
@@ -2091,21 +2091,21 @@ static int oplus_chg_debug_info_parse_dt(void)
 		if (!count)
 			continue;
 
-		g_wrap_charge_strategy_p[i] = kzalloc((count + 1) * sizeof(struct wrap_charge_strategy), GFP_KERNEL);
+		g_vooc_charge_strategy_p[i] = kzalloc((count + 1) * sizeof(struct vooc_charge_strategy), GFP_KERNEL);
 
 		j = 0;
 		for_each_child_of_node(node, child)
 		{
 			ret = of_property_read_u32_array(child, "capacity_range", val, 2);
 			if (!ret) {
-				g_wrap_charge_strategy_p[i][j].capacity_range.low = val[0];
-				g_wrap_charge_strategy_p[i][j].capacity_range.high = val[1];
+				g_vooc_charge_strategy_p[i][j].capacity_range.low = val[0];
+				g_vooc_charge_strategy_p[i][j].capacity_range.high = val[1];
 			}
 
 			ret = of_property_read_u32_array(child, "temp_range", val, 2);
 			if (!ret) {
-				g_wrap_charge_strategy_p[i][j].temp_range.low = val[0];
-				g_wrap_charge_strategy_p[i][j].temp_range.high = val[1];
+				g_vooc_charge_strategy_p[i][j].temp_range.low = val[0];
+				g_vooc_charge_strategy_p[i][j].temp_range.high = val[1];
 			}
 
 			size = of_property_count_elems_of_size(child, "input_current", sizeof(u32));
@@ -2114,25 +2114,25 @@ static int oplus_chg_debug_info_parse_dt(void)
 				{
 					ret = of_property_read_u32_index(child, "input_current", 3 * k, &val[0]);
 					if (!ret) {
-						g_wrap_charge_strategy_p[i][j].input_current[k].cur = val[0];
+						g_vooc_charge_strategy_p[i][j].input_current[k].cur = val[0];
 					}
 
 					ret = of_property_read_u32_index(child, "input_current", 3 * k + 1, &val[0]);
 					if (!ret) {
-						g_wrap_charge_strategy_p[i][j].input_current[k].vol = val[0];
+						g_vooc_charge_strategy_p[i][j].input_current[k].vol = val[0];
 					}
 
 					ret = of_property_read_u32_index(child, "input_current", 3 * k + 2, &val[0]);
 					if (!ret) {
-						g_wrap_charge_strategy_p[i][j].input_current[k].time = val[0];
+						g_vooc_charge_strategy_p[i][j].input_current[k].time = val[0];
 					}
 				}
 			}
 			j++;
 		}
 
-		g_wrap_charge_strategy_p[i][count].capacity_range.low = -1;
-		g_wrap_charge_strategy_p[i][count].capacity_range.high = -1;
+		g_vooc_charge_strategy_p[i][count].capacity_range.low = -1;
+		g_vooc_charge_strategy_p[i][count].capacity_range.high = -1;
 	}
 
 	return 0;
@@ -2246,7 +2246,7 @@ static int oplus_chg_debug_info_reset(void)
 	oplus_chg_debug_info.fastchg_input_current = -1;
 
 
-	oplus_chg_debug_info.wrap_charge_strategy = NULL;
+	oplus_chg_debug_info.vooc_charge_strategy = NULL;
 	oplus_chg_debug_info.wrap_charge_input_current_index = 0;
 	oplus_chg_debug_info.wrap_charge_cur_state_chg_time = 0;
 
