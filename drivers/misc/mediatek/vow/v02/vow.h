@@ -25,7 +25,11 @@
 #define DEBUG_VOWDRV 1
 
 #if DEBUG_VOWDRV
+#ifdef OPLUS_FEATURE_VOICE_WAKEUP_LOG_ENABLE
+#define VOWDRV_DEBUG(format, args...) pr_err(format, ##args)
+#else
 #define VOWDRV_DEBUG(format, args...) pr_debug(format, ##args)
+#endif
 #else
 #define VOWDRV_DEBUG(format, args...)
 #endif
@@ -106,7 +110,7 @@
 #define VOW_PCM_DUMP_BYTE_SIZE         0xA00 /* 320 * 8 */
 #define VOW_EXTRA_DATA_SIZE            0x100 /* 256 */
 
-#define VOW_ENGINE_INFO_LENGTH_BYTE    32
+#define VOW_ENGINE_INFO_LENGTH_BYTE    64
 
 #if (defined CONFIG_MTK_VOW_DUAL_MIC_SUPPORT && defined DUAL_CH_TRANSFER)
 #define VOW_RECOGDATA_OFFSET          (VOW_VOICEDATA_OFFSET + VOW_MAX_MIC_NUM * VOW_VOICEDATA_SIZE)
