@@ -160,8 +160,6 @@ struct ufsf_feature {
 
 	/* for debug */
 	bool tw_debug;
-	int tw_debug_no;
-	atomic64_t tw_debug_ee_count;
 #endif
 };
 
