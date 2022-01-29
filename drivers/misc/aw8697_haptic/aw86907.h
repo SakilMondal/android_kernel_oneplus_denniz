@@ -579,8 +579,8 @@ struct aw86907_que_seq {
 #define RINGTONES_PURE_INDEX                             49
 #define NEW_RING_START                                   118
 #define NEW_RING_END                                     160
-#define REALME_RING_START                                161
-#define REALME_RING_END                                  170
+#define OPLUS_RING_START                                 161
+#define OPLUS_RING_END                                   170
 #define OPLUS_NEW_RING_1_START                           201
 #define OPLUS_NEW_RING_1_END                             280
 #define OPLUS_NEW_RING_2_START                           292

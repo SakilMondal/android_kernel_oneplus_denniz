@@ -6440,7 +6440,7 @@ static ssize_t aw86907_rtp_store(struct device *dev, struct device_attribute *at
     /*OP add for juge rtp on end*/
     if (((val >=  RINGTONES_START_INDEX && val <= RINGTONES_END_INDEX)
         || (val >=  NEW_RING_START && val <= NEW_RING_END)
-        || (val >=  REALME_RING_START && val <= REALME_RING_END)
+        || (val >=  OPLUS_RING_START && val <= OPLUS_RING_END)
         || (val >=  OPLUS_NEW_RING_1_START && val <= OPLUS_NEW_RING_1_END)
         || (val >=  OPLUS_NEW_RING_2_START && val <= OPLUS_NEW_RING_2_END)
         || val == RINGTONES_SIMPLE_INDEX
