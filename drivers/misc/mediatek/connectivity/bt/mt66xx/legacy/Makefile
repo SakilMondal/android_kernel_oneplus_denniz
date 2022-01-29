@@ -7,7 +7,7 @@ MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
 
 ifneq ($(KERNEL_OUT),)
     ccflags-y += -imacros $(KERNEL_OUT)/include/generated/autoconf.h
-endif2w
+endif
 
 ifndef TOP
     TOP := $(srctree)/..
