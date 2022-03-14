@@ -293,9 +293,9 @@ void disassociate_ctty(int on_exit)
 	spin_lock_irq(&current->sighand->siglock);
 	put_pid(current->signal->tty_old_pgrp);
 	current->signal->tty_old_pgrp = NULL;
-
 	tty = tty_kref_get(current->signal->tty);
 	spin_unlock_irq(&current->sighand->siglock);
+
 	if (tty) {
 		unsigned long flags;
 
@@ -485,6 +485,7 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t 
 		return -EFAULT;
 	if (pgrp_nr < 0)
 		return -EINVAL;
+
 	spin_lock_irq(&real_tty->ctrl_lock);
 	if (!current->signal->tty ||
 	    (current->signal->tty != real_tty) ||
@@ -523,6 +524,7 @@ static int tiocgsid(struct tty_struct *tty, struct tty_struct *real_tty, pid_t _
 {
 	unsigned long flags;
 	pid_t sid;
+
 	/*
 	 * (tty == real_tty) is a cheap way of
 	 * testing if the tty is NOT a master pty.
