@@ -272,3 +272,5 @@ obj-$(CONFIG_PARMAN) += parman.o
 # /* add memleak detect stack depot */
 obj-$(CONFIG_VMALLOC_DEBUG) += memleak_debug_stackdepot.o
 # endif
+
+obj-y += crypto/
