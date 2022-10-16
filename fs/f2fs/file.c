@@ -293,7 +293,7 @@ static int f2fs_do_sync_file(struct file *file, loff_t start, loff_t end,
         wr_file_end = local_clock();
 #endif
 
-	if (ret) {
+	if (ret || is_sbi_flag_set(sbi, SBI_CP_DISABLED)) {
 		trace_f2fs_sync_file_exit(inode, cp_reason, datasync, ret);
 		return ret;
 	}
